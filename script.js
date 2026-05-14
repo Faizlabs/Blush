@@ -12,7 +12,15 @@ const firebaseConfig = {
   appId: "1:809245040422:web:f618b98ca67b29d2782be7",
   measurementId: "G-646V69SRP7"
 };
-
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -35,12 +43,48 @@ class BlushApp {
 
         this.init();
     }
+    listenForMessages() {
+  const messagesRef = collection(db, "messages");
+
+  const q = query(messagesRef, orderBy("timestamp", "asc"));
+
+  onSnapshot(q, (snapshot) => {
+    this.messages = [];
+
+    snapshot.forEach((doc) => {
+      this.messages.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+
+    console.log("Realtime messages:", this.messages);
+
+    this.renderMessages();
+  });
+}
+async sendMessage(text) {
+  if (!text.trim()) return;
+
+  try {
+    await addDoc(collection(db, "messages"), {
+      text: text,
+      user: this.userProfile.displayName,
+      timestamp: serverTimestamp()
+    });
+
+    console.log("Message sent");
+  } catch (error) {
+    console.error("Error sending message:", error);
+  }
+}
 
     init() {
         this.setupEventListeners();
         this.applyTheme();
         this.showLoadingScreen();
         this.setupAuthStateListener();
+        
 
         // Simulate loading time
         setTimeout(() => {
@@ -50,7 +94,22 @@ class BlushApp {
             }
         }, 2000);
     }
+listenForMessages() {
+    const q = query(
+        collection(db, "messages"),
+        orderBy("timestamp", "asc")
+    );
 
+    onSnapshot(q, (snapshot) => {
+        const messages = [];
+
+        snapshot.forEach((doc) => {
+            messages.push(doc.data());
+        });
+
+        console.log("Realtime messages:", messages);
+    });
+}
     setupEventListeners() {
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
@@ -165,6 +224,7 @@ class BlushApp {
     setupAuthStateListener() {
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                this.listenForMessages();
                 this.updateUserProfileFromFirebase(user);
                 this.showMainApp();
             } else {
