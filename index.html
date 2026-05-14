@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blush - Cozy Messaging</title>
+    <link rel="icon" href="assets/logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <img src="assets/logo.png" alt="Blush Logo" class="loading-logo">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Auth Container -->
+    <div id="auth-container" class="auth-container hidden">
+        <!-- Login Form -->
+        <div id="login-form" class="auth-form">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <img src="assets/logo.png" alt="Blush Logo" class="auth-logo">
+                    <h1>Welcome Back</h1>
+                    <p>Sign in to continue to Blush</p>
+                </div>
+                <form class="auth-form-fields">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="remember-me">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="auth-button primary">Sign In</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
+                    <div class="social-login">
+                        <button class="social-button google">Continue with Google</button>
+                        <button class="social-button apple">Continue with Apple</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signup-form" class="auth-form hidden">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <img src="assets/logo.png" alt="Blush Logo" class="auth-logo">
+                    <h1>Join Blush</h1>
+                    <p>Create your account</p>
+                </div>
+                <form class="auth-form-fields">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" class="auth-button primary">Create Account</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="show-login">Sign in</a></p>
+                    <div class="social-login">
+                        <button class="social-button google">Continue with Google</button>
+                        <button class="social-button apple">Continue with Apple</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="Blush Logo" class="sidebar-logo">
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar" id="sidebar-avatar">U</div>
+                <div class="user-info">
+                    <h3 id="sidebar-display-name">You</h3>
+                </div>
+            </div>
+
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search conversations..." id="search-input">
+                <button class="search-button" aria-label="Search">
+                    <span>🔍</span>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-view="chats">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">Chats</span>
+                    </li>
+                    <li class="nav-item" data-view="settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span class="nav-text">Settings</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="recent-chats">
+                <h4>Active Conversations</h4>
+                <div class="chat-list" id="chat-list">
+                    <div class="chat-empty-list">
+                        <p>No conversations are loaded yet.</p>
+                        <p>Once your account connects, your current chats will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main id="main-chat" class="main-chat">
+            <div class="chat-empty-state" id="chat-empty-state">
+                <div class="empty-card">
+                    <img src="assets/logo.png" alt="Blush Logo" class="empty-logo">
+                    <h2>Welcome to Blush</h2>
+                    <p>Your chat space is ready. Real-time conversations will appear here once messaging is connected.</p>
+                    <p class="empty-note">For now, enjoy a clean, intentional interface while we prepare the live experience.</p>
+                </div>
+            </div>
+
+            <section class="settings-panel hidden" id="settings-panel">
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <div>
+                            <p class="settings-subtitle">Profile</p>
+                            <h2>Profile settings</h2>
+                        </div>
+                    </div>
+
+                    <div class="profile-summary">
+                        <div class="profile-avatar-large" id="profile-avatar-preview">U</div>
+                        <div class="profile-preview-info">
+                            <p class="profile-preview-label">Session display name</p>
+                            <p class="profile-preview-name" id="profile-name-preview">You</p>
+                        </div>
+                    </div>
+
+                    <form id="profile-form" class="profile-form">
+                        <div class="form-group">
+                            <label for="display-name-input">Display Name</label>
+                            <input type="text" id="display-name-input" placeholder="Enter your display name">
+                        </div>
+                        <p class="profile-note">This name updates the sidebar and profile preview for the current session.</p>
+                        <button type="submit" class="auth-button primary" id="save-profile-button">Save changes</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mobile Chat List Overlay -->
+        <div id="mobile-chat-list" class="mobile-chat-list hidden">
+            <div class="mobile-header">
+                <img src="assets/logo.png" alt="Blush Logo" class="mobile-logo">
+                <h1>Chats</h1>
+            </div>
+            <div class="mobile-chat-list-container">
+                <!-- Chat list for mobile -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
