@@ -346,6 +346,31 @@ body {
     box-shadow: 0 18px 30px rgba(117, 83, 61, 0.28);
 }
 
+.auth-button.secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: none;
+}
+
+.auth-button.secondary:hover {
+    background: var(--bg-glass-hover);
+}
+
+.auth-error {
+    margin-top: 12px;
+    color: #b55a4f;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.profile-email {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
 .auth-footer {
     text-align: center;
 }

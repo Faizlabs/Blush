@@ -1,3 +1,23 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence, updateProfile } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD96zvLUuCw-DLJ7Z6i6lERuDMpP3Kwpo8",
+  authDomain: "blush-fc629.firebaseapp.com",
+  projectId: "blush-fc629",
+  storageBucket: "blush-fc629.firebasestorage.app",
+  messagingSenderId: "809245040422",
+  appId: "1:809245040422:web:f618b98ca67b29d2782be7",
+  measurementId: "G-646V69SRP7"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+
 // Blush Chat Application - JavaScript
 // Firebase-ready architecture with placeholders for future integration
 
@@ -20,11 +40,14 @@ class BlushApp {
         this.setupEventListeners();
         this.applyTheme();
         this.showLoadingScreen();
+        this.setupAuthStateListener();
 
         // Simulate loading time
         setTimeout(() => {
             this.hideLoadingScreen();
-            this.showAuth();
+            if (!auth.currentUser) {
+                this.showAuth();
+            }
         }, 2000);
     }
 
@@ -86,6 +109,11 @@ class BlushApp {
         if (profileForm) {
             profileForm.addEventListener('submit', (e) => this.handleProfileSave(e));
         }
+
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => this.handleLogout());
+        }
     }
 
     // Theme Management
@@ -101,6 +129,21 @@ class BlushApp {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
         localStorage.setItem('theme', this.currentTheme);
         this.applyTheme();
+    }
+
+    setupAuthStateListener() {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                this.updateUserProfileFromFirebase(user);
+                this.showMainApp();
+            } else {
+                this.userProfile = {
+                    displayName: 'You',
+                    initials: 'U',
+                };
+                this.showAuth();
+            }
+        });
     }
 
     // Loading Screen
@@ -134,6 +177,7 @@ class BlushApp {
 
         if (loginForm) loginForm.classList.add('hidden');
         if (signupForm) signupForm.classList.remove('hidden');
+        this.clearAuthMessages();
     }
 
     showLoginForm() {
@@ -142,48 +186,122 @@ class BlushApp {
 
         if (signupForm) signupForm.classList.add('hidden');
         if (loginForm) loginForm.classList.remove('hidden');
+        this.clearAuthMessages();
+    }
+
+    updateUserProfileFromFirebase(user) {
+        if (!user) return;
+
+        const email = user.email || '';
+        const displayName = user.displayName || email.split('@')[0] || 'You';
+        this.userProfile.displayName = displayName;
+        this.userProfile.initials = this.getInitials(displayName);
+        this.updateUserProfileUI();
+
+        const profileEmail = document.getElementById('profile-email');
+        if (profileEmail) {
+            profileEmail.textContent = email;
+        }
+    }
+
+    async handleLogout() {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error('Logout failed', error);
+            alert('Unable to sign out. Please try again.');
+        }
+    }
+
+    showAuthError(targetId, error) {
+        const element = document.getElementById(targetId);
+        if (!element) return;
+
+        const message = typeof error === 'string' ? error : this.getFirebaseAuthErrorMessage(error);
+        element.textContent = message;
+    }
+
+    clearAuthMessages() {
+        const loginError = document.getElementById('login-error');
+        const signupError = document.getElementById('signup-error');
+        if (loginError) loginError.textContent = '';
+        if (signupError) signupError.textContent = '';
+    }
+
+    getFirebaseAuthErrorMessage(error) {
+        if (!error || !error.code) {
+            return error?.message || 'An error occurred. Please try again.';
+        }
+
+        switch (error.code) {
+            case 'auth/wrong-password':
+                return 'Wrong password. Please try again.';
+            case 'auth/user-not-found':
+                return 'No account found with that email.';
+            case 'auth/email-already-in-use':
+                return 'This email is already in use. Try logging in instead.';
+            case 'auth/invalid-email':
+                return 'Please enter a valid email address.';
+            case 'auth/weak-password':
+                return 'Password should be at least 6 characters.';
+            case 'auth/too-many-requests':
+                return 'Too many attempts. Please try again in a moment.';
+            default:
+                return error.message || 'An error occurred. Please try again.';
+        }
     }
 
     async handleLogin(e) {
         e.preventDefault();
+        this.clearAuthMessages();
 
-        const email = document.getElementById('login-email').value;
+        const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
+        const rememberMe = document.getElementById('remember-me')?.checked;
 
         if (!email || !password) {
-            alert('Please fill in all fields');
+            this.showAuthError('login-error', 'Please fill in all fields.');
             return;
         }
 
-        // Firebase Auth placeholder
-        // In future: await firebase.auth().signInWithEmailAndPassword(email, password);
-
-        // Simulate login success
-        this.showMainApp();
+        try {
+            await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+            const credential = await signInWithEmailAndPassword(auth, email, password);
+            this.updateUserProfileFromFirebase(credential.user);
+            this.showMainApp();
+        } catch (error) {
+            this.showAuthError('login-error', error);
+        }
     }
 
     async handleSignup(e) {
         e.preventDefault();
+        this.clearAuthMessages();
 
-        const email = document.getElementById('signup-email').value;
+        const email = document.getElementById('signup-email').value.trim();
         const password = document.getElementById('signup-password').value;
         const confirmPassword = document.getElementById('signup-confirm-password').value;
 
         if (!email || !password || !confirmPassword) {
-            alert('Please fill in all fields');
+            this.showAuthError('signup-error', 'Please fill in all fields.');
             return;
         }
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match');
+            this.showAuthError('signup-error', 'Passwords do not match.');
             return;
         }
 
-        // Firebase Auth placeholder
-        // In future: await firebase.auth().createUserWithEmailAndPassword(email, password);
-
-        // Simulate signup success
-        this.showMainApp();
+        try {
+            await setPersistence(auth, browserLocalPersistence);
+            const credential = await createUserWithEmailAndPassword(auth, email, password);
+            const displayName = email.split('@')[0];
+            await updateProfile(credential.user, { displayName });
+            this.updateUserProfileFromFirebase(credential.user);
+            this.showMainApp();
+        } catch (error) {
+            this.showAuthError('signup-error', error);
+        }
     }
 
     // Main App

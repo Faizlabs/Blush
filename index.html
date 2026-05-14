@@ -47,6 +47,7 @@
                         <a href="#" class="forgot-password">Forgot password?</a>
                     </div>
                     <button type="submit" class="auth-button primary">Sign In</button>
+                    <div class="auth-error" id="login-error"></div>
                 </form>
                 <div class="auth-footer">
                     <p>Don't have an account? <a href="#" id="show-signup">Sign up</a></p>
@@ -80,6 +81,7 @@
                         <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
                     </div>
                     <button type="submit" class="auth-button primary">Create Account</button>
+                    <div class="auth-error" id="signup-error"></div>
                 </form>
                 <div class="auth-footer">
                     <p>Already have an account? <a href="#" id="show-login">Sign in</a></p>
@@ -164,8 +166,9 @@
                     <div class="profile-summary">
                         <div class="profile-avatar-large" id="profile-avatar-preview">U</div>
                         <div class="profile-preview-info">
-                            <p class="profile-preview-label">Session display name</p>
+                            <p class="profile-preview-label">Signed in as</p>
                             <p class="profile-preview-name" id="profile-name-preview">You</p>
+                            <p class="profile-email" id="profile-email">you@example.com</p>
                         </div>
                     </div>
 
@@ -176,6 +179,7 @@
                         </div>
                         <p class="profile-note">This name updates the sidebar and profile preview for the current session.</p>
                         <button type="submit" class="auth-button primary" id="save-profile-button">Save changes</button>
+                        <button type="button" class="auth-button secondary" id="logout-button">Sign out</button>
                     </form>
                 </div>
             </section>
@@ -193,6 +197,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
