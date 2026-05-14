@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="assets/logo.png">
 </head>
 <body>
     <!-- Loading Screen -->
@@ -100,9 +101,12 @@
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <img src="assets/logo.png" alt="Blush Logo" class="sidebar-logo">
-                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-                    <span class="theme-icon">🌙</span>
-                </button>
+                <div class="sidebar-header-actions">
+                    <button id="close-sidebar-button" class="sidebar-close-button mobile-only" aria-label="Close navigation">✕</button>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </div>
             </div>
 
             <div class="user-profile">
@@ -145,6 +149,9 @@
 
         <!-- Main Chat Area -->
         <main id="main-chat" class="main-chat">
+            <div class="mobile-nav-toggle mobile-only">
+                <button id="open-sidebar-button" class="sidebar-open-button" aria-label="Open navigation">☰</button>
+            </div>
             <div class="chat-empty-state" id="chat-empty-state">
                 <div class="empty-card">
                     <img src="assets/logo.png" alt="Blush Logo" class="empty-logo">

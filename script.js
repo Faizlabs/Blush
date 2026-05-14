@@ -114,6 +114,16 @@ class BlushApp {
         if (logoutButton) {
             logoutButton.addEventListener('click', () => this.handleLogout());
         }
+
+        const openSidebarButton = document.getElementById('open-sidebar-button');
+        if (openSidebarButton) {
+            openSidebarButton.addEventListener('click', () => this.openSidebar());
+        }
+
+        const closeSidebarButton = document.getElementById('close-sidebar-button');
+        if (closeSidebarButton) {
+            closeSidebarButton.addEventListener('click', () => this.closeSidebar());
+        }
     }
 
     // Theme Management
@@ -129,6 +139,27 @@ class BlushApp {
         this.currentTheme = this.currentTheme === 'light' ? 'dark' : 'light';
         localStorage.setItem('theme', this.currentTheme);
         this.applyTheme();
+    }
+
+    openSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.add('open');
+        }
+    }
+
+    closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.remove('open');
+        }
+    }
+
+    toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('open');
+        }
     }
 
     setupAuthStateListener() {
@@ -313,6 +344,7 @@ class BlushApp {
         if (authContainer) authContainer.classList.add('hidden');
         if (app) app.classList.remove('hidden');
 
+        this.closeSidebar();
         this.updateUserProfileUI();
         this.showChats();
         this.renderChatList();
