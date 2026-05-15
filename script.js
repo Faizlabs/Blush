@@ -25,6 +25,7 @@ import {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 // Blush Chat Application - JavaScript
 // Firebase-ready architecture with placeholders for future integration
@@ -43,41 +44,6 @@ class BlushApp {
 
         this.init();
     }
-    listenForMessages() {
-  const messagesRef = collection(db, "messages");
-
-  const q = query(messagesRef, orderBy("timestamp", "asc"));
-
-  onSnapshot(q, (snapshot) => {
-    this.messages = [];
-
-    snapshot.forEach((doc) => {
-      this.messages.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-
-    console.log("Realtime messages:", this.messages);
-
-    this.renderMessages();
-  });
-}
-async sendMessage(text) {
-  if (!text.trim()) return;
-
-  try {
-    await addDoc(collection(db, "messages"), {
-      text: text,
-      user: this.userProfile.displayName,
-      timestamp: serverTimestamp()
-    });
-
-    console.log("Message sent");
-  } catch (error) {
-    console.error("Error sending message:", error);
-  }
-}
 
     init() {
         this.setupEventListeners();
@@ -94,22 +60,43 @@ async sendMessage(text) {
             }
         }, 2000);
     }
-listenForMessages() {
-    const q = query(
-        collection(db, "messages"),
-        orderBy("timestamp", "asc")
-    );
 
-    onSnapshot(q, (snapshot) => {
-        const messages = [];
+    listenForMessages() {
+        const q = query(
+            collection(db, "messages"),
+            orderBy("timestamp", "asc")
+        );
 
-        snapshot.forEach((doc) => {
-            messages.push(doc.data());
+        onSnapshot(q, (snapshot) => {
+            this.messages = [];
+
+            snapshot.forEach((doc) => {
+                this.messages.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+
+            console.log("Realtime messages:", this.messages);
         });
+    }
 
-        console.log("Realtime messages:", messages);
-    });
-}
+    async sendMessage(text) {
+        if (!text.trim()) return;
+
+        try {
+            await addDoc(collection(db, "messages"), {
+                text: text,
+                user: this.userProfile.displayName,
+                timestamp: serverTimestamp()
+            });
+
+            console.log("Message sent");
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    }
+
     setupEventListeners() {
         // Theme toggle
         const themeToggle = document.getElementById('theme-toggle');
