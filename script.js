@@ -78,7 +78,48 @@ class BlushApp {
             });
 
             console.log("Realtime messages:", this.messages);
+            this.renderMessages();
         });
+    }
+
+    renderMessages() {
+        const messagesContainer = document.getElementById('messages-container');
+        if (!messagesContainer) return;
+
+        messagesContainer.innerHTML = '';
+
+        this.messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            const isOwn = msg.user === this.userProfile.displayName;
+            messageDiv.className = `message ${isOwn ? 'sent' : 'received'}`;
+
+            const timestamp = msg.timestamp
+                ? new Date(msg.timestamp.toDate ? msg.timestamp.toDate() : msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : '';
+
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${msg.text}
+                </div>
+                <div class="message-meta">
+                    <span class="message-sender">${msg.user}</span>
+                    <span class="message-time">${timestamp}</span>
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+        });
+
+        // Update view visibility when messages arrive
+        this.toggleViewVisibility();
+        this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     }
 
     async sendMessage(text) {
@@ -94,6 +135,18 @@ class BlushApp {
             console.log("Message sent");
         } catch (error) {
             console.error("Error sending message:", error);
+        }
+    }
+
+    handleSendMessage() {
+        const messageInput = document.getElementById('message-input');
+        if (!messageInput) return;
+
+        const text = messageInput.value.trim();
+        if (text) {
+            this.sendMessage(text);
+            messageInput.value = '';
+            messageInput.focus();
         }
     }
 
@@ -169,6 +222,23 @@ class BlushApp {
         const closeSidebarButton = document.getElementById('close-sidebar-button');
         if (closeSidebarButton) {
             closeSidebarButton.addEventListener('click', () => this.closeSidebar());
+        }
+
+        // Message input handlers
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        if (messageInput) {
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.handleSendMessage();
+                }
+            });
+        }
+
+        if (sendButton) {
+            sendButton.addEventListener('click', () => this.handleSendMessage());
         }
     }
 
@@ -419,10 +489,15 @@ class BlushApp {
 
     toggleViewVisibility() {
         const chatEmptyState = document.getElementById('chat-empty-state');
+        const chatView = document.getElementById('chat-view');
         const settingsPanel = document.getElementById('settings-panel');
 
         if (chatEmptyState) {
-            chatEmptyState.classList.toggle('hidden', this.currentView !== 'chats');
+            chatEmptyState.classList.toggle('hidden', this.currentView !== 'chats' || this.messages.length > 0);
+        }
+
+        if (chatView) {
+            chatView.classList.toggle('hidden', this.currentView !== 'chats' || this.messages.length === 0);
         }
 
         if (settingsPanel) {

@@ -152,6 +152,22 @@
             <div class="mobile-nav-toggle mobile-only">
                 <button id="open-sidebar-button" class="sidebar-open-button" aria-label="Open navigation">☰</button>
             </div>
+
+            <!-- Chat View -->
+            <div class="chat-view hidden" id="chat-view">
+                <div class="messages-container" id="messages-container">
+                    <!-- Messages will be rendered here -->
+                </div>
+                <div class="message-input-container">
+                    <div class="message-input-wrapper">
+                        <button class="emoji-button" aria-label="Add emoji">😊</button>
+                        <input type="text" class="message-input" id="message-input" placeholder="Type a message...">
+                        <button class="send-button" id="send-button" aria-label="Send message">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
             <div class="chat-empty-state" id="chat-empty-state">
                 <div class="empty-card">
                     <img src="assets/logo.png" alt="Blush Logo" class="empty-logo">
